@@ -290,14 +290,9 @@ export function useSolanaSwap(): UseSolanaSwap {
 
   /* --------------------------- lifecycle hooks --------------------------- */
 
+  useEffect(() => void loadTokens(), []);
   useEffect(() => {
-    void loadTokens();
-  }, []);
-
-  useEffect(() => {
-    if (connected && publicKey) {
-      void loadTokens();
-    }
+    if (connected && publicKey) void loadTokens();
   }, [connected, publicKey, loadTokens]);
 
   const refreshTokens = () => void loadTokens(true);
@@ -324,6 +319,16 @@ export function useSolanaSwap(): UseSolanaSwap {
   useEffect(() => {
     G.execute = execute;
   }, [execute]);
+
+  /* ---------------------------------------------------------------------- */
+  /*                     Clear stale quote on token change                  */
+  /* ---------------------------------------------------------------------- */
+
+  useEffect(() => {
+    setQuote(null);
+    setExecute(null);
+    setToAmount("");
+  }, [fromToken, toToken]);
 
   /* ---------------------------------------------------------------------- */
   /*                               Helpers                                  */

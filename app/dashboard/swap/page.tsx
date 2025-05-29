@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
-
+import React, { useCallback, useRef } from "react";
 import {
   ArrowDown,
   Info,
@@ -24,6 +23,87 @@ import { useSolanaSwap } from "@/lib/hooks/use-solana-swap";
 import { fromRawAmount } from "@/lib/utils";
 import type { SwapToken } from "@/types/swap";
 
+/* -------------------------------------------------------------------------- */
+/*                              Helper components                             */
+/* -------------------------------------------------------------------------- */
+
+const BalanceLine: React.FC<{ tok: SwapToken | null; onMax?: () => void }> = ({
+  tok,
+  onMax,
+}) => (
+  <div className="flex items-center justify-between text-sm text-white/60 mt-1">
+    <span>Balance: {tok?.balance ?? "0"}</span>
+    {onMax && (
+      <button
+        className="text-purple-400 hover:underline text-xs"
+        onClick={onMax}
+      >
+        Max
+      </button>
+    )}
+  </div>
+);
+
+interface AmountSectionProps {
+  label: string;
+  amount: string;
+  onAmountChange?: (v: string) => void;
+  readOnly?: boolean;
+  token: SwapToken | null;
+  onTokenChange: (t: SwapToken) => void;
+  tokens: SwapToken[];
+  tokensLoading: boolean;
+}
+
+const AmountSection: React.FC<AmountSectionProps> = ({
+  label,
+  amount,
+  onAmountChange,
+  readOnly = false,
+  token,
+  onTokenChange,
+  tokens,
+  tokensLoading,
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-sm text-white/60">{label}</span>
+        <div className="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full border border-purple-500/30 text-xs text-purple-300 font-medium">
+          Solana
+        </div>
+      </div>
+      <div className="flex justify-between items-center mb-2">
+        <input
+          ref={inputRef}
+          type="text"
+          value={amount}
+          readOnly={readOnly}
+          onChange={(e) => onAmountChange?.(e.target.value)}
+          className="text-2xl font-medium bg-transparent outline-none w-[60%] text-white placeholder:text-white/40"
+          placeholder="0.0"
+        />
+        <TokenSelector
+          tokens={tokens}
+          selected={token}
+          onSelect={onTokenChange}
+          loading={tokensLoading}
+        />
+      </div>
+      <BalanceLine
+        tok={token}
+        onMax={
+          readOnly || !onAmountChange
+            ? undefined
+            : () => onAmountChange(token?.balance ?? "0")
+        }
+      />
+    </div>
+  );
+};
+
 const IconBtn = ({
   icon: Icon,
   onClick,
@@ -44,27 +124,9 @@ const IconBtn = ({
   </Button>
 );
 
-function BalanceLine({
-  tok,
-  onMax,
-}: {
-  tok: SwapToken | null;
-  onMax?: () => void;
-}) {
-  return (
-    <div className="flex items-center justify-between text-sm text-white/60 mt-1">
-      <span>Balance: {tok?.balance ?? "0"}</span>
-      {onMax && (
-        <button
-          className="text-purple-400 hover:underline text-xs"
-          onClick={onMax}
-        >
-          Max
-        </button>
-      )}
-    </div>
-  );
-}
+/* -------------------------------------------------------------------------- */
+/*                             Main swap component                            */
+/* -------------------------------------------------------------------------- */
 
 export default function SolanaSwapPage() {
   const {
@@ -93,21 +155,15 @@ export default function SolanaSwapPage() {
 
   const fmt = (raw: string, dec: number) => fromRawAmount(raw, dec, 6);
 
-  /* ---------------------------------------------------------------------- */
-  /*                       Token selection helpers                          */
-  /* ---------------------------------------------------------------------- */
+  /* ------------------------ Token selection handlers ----------------------- */
 
   const handleSelectFromToken = useCallback(
-    (tok: SwapToken) => {
-      setFromToken(tok);
-    },
+    (tok: SwapToken) => setFromToken(tok),
     [setFromToken],
   );
 
   const handleSelectToToken = useCallback(
-    (tok: SwapToken) => {
-      setToToken(tok);
-    },
+    (tok: SwapToken) => setToToken(tok),
     [setToToken],
   );
 
@@ -119,75 +175,16 @@ export default function SolanaSwapPage() {
     />
   );
 
-  const AmountSection = ({
-    label,
-    amount,
-    onAmountChange,
-    readOnly = false,
-    token,
-    onTokenChange,
-  }: {
-    label: string;
-    amount: string;
-    onAmountChange?: (v: string) => void;
-    readOnly?: boolean;
-    token: SwapToken | null;
-    onTokenChange: (t: SwapToken) => void;
-  }) => {
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    return (
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm text-white/60">{label}</span>
-          <div className="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full border border-purple-500/30 text-xs text-purple-300 font-medium">
-            Solana
-          </div>
-        </div>
-        <div className="flex justify-between items-center mb-2">
-          <input
-            ref={inputRef}
-            type="text"
-            value={amount}
-            readOnly={readOnly}
-            onChange={(e) => {
-              if (onAmountChange) {
-                onAmountChange(e.target.value);
-                requestAnimationFrame(() => inputRef.current?.focus());
-              }
-            }}
-            className="text-2xl font-medium bg-transparent outline-none w-[60%] text-white placeholder:text-white/40"
-            placeholder="0.0"
-          />
-          <TokenSelector
-            tokens={tokens}
-            selected={token}
-            onSelect={onTokenChange}
-            loading={tokensLoading}
-          />
-        </div>
-        <BalanceLine
-          tok={token}
-          onMax={
-            readOnly || !onAmountChange
-              ? undefined
-              : () => onAmountChange(token?.balance ?? "0")
-          }
-        />
-      </div>
-    );
-  };
-
   const SwapPanel = () => (
     <div className="backdrop-blur-sm bg-gradient-to-br from-purple-100/10 to-blue-100/10 border border-white/10 rounded-xl overflow-visible hover:border-white/20 transition-all">
       <AmountSection
         label="From"
         amount={fromAmount}
-        onAmountChange={(v) => {
-          setFromAmount(v);
-        }}
+        onAmountChange={setFromAmount}
         token={fromToken}
         onTokenChange={handleSelectFromToken}
+        tokens={tokens}
+        tokensLoading={tokensLoading}
       />
       <div className="flex justify-center -mt-2 -mb-2 relative z-10">
         <Button
@@ -204,6 +201,8 @@ export default function SolanaSwapPage() {
         readOnly
         token={toToken}
         onTokenChange={handleSelectToToken}
+        tokens={tokens}
+        tokensLoading={tokensLoading}
       />
     </div>
   );
@@ -260,6 +259,8 @@ export default function SolanaSwapPage() {
     </div>
   );
 
+  /* -------------------------------- Metrics ------------------------------- */
+
   const payHuman =
     quote && fromToken ? fmt(quote.fromTokenAmount, fromToken.decimals) : "0";
   const receiveHuman =
@@ -278,6 +279,8 @@ export default function SolanaSwapPage() {
     (execute as any)?.id ??
     "";
   const explorerUrl: string | undefined = (execute as any)?.explorerUrl;
+
+  /* -------------------------------- Render -------------------------------- */
 
   return (
     <PageCard
