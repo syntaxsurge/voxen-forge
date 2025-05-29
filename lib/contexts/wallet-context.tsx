@@ -17,6 +17,7 @@ import {
   useConnection,
   useWallet as useAdapterWallet,
 } from "@solana/wallet-adapter-react";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -85,7 +86,7 @@ export const WalletAdapterProviders: React.FC<{ children: ReactNode }> = ({
   return (
     <ConnectionProvider endpoint={endpoint}>
       <AdapterWalletProvider wallets={wallets} autoConnect>
-        {children}
+        <WalletModalProvider>{children}</WalletModalProvider>
       </AdapterWalletProvider>
     </ConnectionProvider>
   );
