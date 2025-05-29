@@ -121,7 +121,7 @@ export default function SolanaSwapPage() {
     ) {
       void getQuote();
     }
-  }, [fromToken, toToken]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fromToken, toToken]);
 
   const headerActions = (
     <IconBtn
