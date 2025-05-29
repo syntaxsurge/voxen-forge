@@ -250,17 +250,22 @@ export function useSolanaSwap(): UseSolanaSwap {
             },
           );
 
-          /* Defaults */
-          if (!G.tokensLoaded || force) {
+          /* Defaults only on first load */
+          if (!G.tokensLoaded) {
             const sol =
               merged.find((t) => Number(t.balance ?? 0) > 0) ??
               merged.find((t) => t.symbol === "SOL") ??
               merged[0];
-            G.fromToken = sol;
-            const next = merged.find(
-              (t) => t.address !== sol.address && Number(t.balance ?? 0) === 0,
-            );
-            G.toToken = next ?? merged[1] ?? merged[0];
+            G.fromToken = G.fromToken ?? sol;
+            const next =
+              G.toToken ??
+              merged.find(
+                (t) =>
+                  t.address !== sol.address && Number(t.balance ?? 0) === 0,
+              ) ??
+              merged[1] ??
+              merged[0];
+            G.toToken = next;
           }
 
           /* Write cache */
@@ -326,7 +331,6 @@ export function useSolanaSwap(): UseSolanaSwap {
 
   useEffect(() => {
     setQuote(null);
-    setExecute(null);
     setToAmount("");
   }, [fromToken, toToken]);
 

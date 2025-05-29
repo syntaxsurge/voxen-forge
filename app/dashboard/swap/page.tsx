@@ -67,6 +67,11 @@ const AmountSection: React.FC<AmountSectionProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onAmountChange?.(e.target.value);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-2">
@@ -81,7 +86,7 @@ const AmountSection: React.FC<AmountSectionProps> = ({
           type="text"
           value={amount}
           readOnly={readOnly}
-          onChange={(e) => onAmountChange?.(e.target.value)}
+          onChange={handleChange}
           className="text-2xl font-medium bg-transparent outline-none w-[60%] text-white placeholder:text-white/40"
           placeholder="0.0"
         />
