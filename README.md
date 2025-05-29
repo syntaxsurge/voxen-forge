@@ -2,7 +2,7 @@
 
 **All-in-one Solana-first DeFi cockpit with AI analytics, cross-chain routing and gas-optimised trades.**
 
-![Voxen Forge Logo](public/images/voxen-forge-logo.png)
+![Voxen Forge Homepage](public/images/homepage.png)
 
 ## Why Voxen Forge?
 
