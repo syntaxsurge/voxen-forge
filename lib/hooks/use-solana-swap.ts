@@ -463,9 +463,8 @@ export function useSolanaSwap(): UseSolanaSwap {
     setExecute(null);
 
     try {
-      /* Prefer amount provided in the quote to avoid parameter mismatch */
-      const rawAmount =
-        quote?.fromTokenAmount ?? toRawAmount(fromAmount, fromToken!.decimals);
+      /* Always use the latest user-provided amount */
+      const rawAmount = toRawAmount(fromAmount, fromToken!.decimals);
 
       const body = {
         action: "execute",
@@ -520,6 +519,19 @@ export function useSolanaSwap(): UseSolanaSwap {
       setExecuting(false);
     }
   };
+
+  /* ----------------------------- Auto-quote ------------------------------ */
+  useEffect(() => {
+    if (
+      fromToken &&
+      toToken &&
+      parseFloat(fromAmount) > 0 &&
+      !quoting &&
+      !executing
+    ) {
+      void getQuote();
+    }
+  }, [fromToken, toToken, fromAmount]); // include amount
 
   return {
     tokens,

@@ -83,11 +83,11 @@ export default function SolanaSwapPage() {
     slippage,
     setSlippage,
     quoting,
-    quote,
     getQuote,
+    quote,
     executing,
-    execute,
     executeSwap,
+    execute,
     error,
   } = useSolanaSwap();
 
@@ -121,7 +121,7 @@ export default function SolanaSwapPage() {
     ) {
       void getQuote();
     }
-  }, [fromToken, toToken]);
+  }, [fromToken, toToken, fromAmount]); // include amount for auto-refresh
 
   const headerActions = (
     <IconBtn
@@ -159,14 +159,12 @@ export default function SolanaSwapPage() {
         <div className="flex justify-between items-center mb-2">
           <input
             ref={inputRef}
-            autoFocus={!readOnly}
             type="text"
             value={amount}
             readOnly={readOnly}
             onChange={(e) => {
               if (onAmountChange) {
                 onAmountChange(e.target.value);
-                /* Re-focus after re-render to prevent blur */
                 requestAnimationFrame(() => inputRef.current?.focus());
               }
             }}
