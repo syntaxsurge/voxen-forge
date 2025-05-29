@@ -2,6 +2,7 @@
 
 import AboutSection from "@/components/landing/about";
 import CallToAction from "@/components/landing/cta";
+import DemoSection from "@/components/landing/demo-section";
 import FeaturesSection from "@/components/landing/features";
 import FooterSection from "@/components/landing/footer";
 import LandingHeader from "@/components/landing/header";
@@ -12,6 +13,7 @@ export default function Home() {
     <>
       <LandingHeader />
       <HeroSection />
+      <DemoSection />
       <FeaturesSection />
       <AboutSection />
       <CallToAction />
