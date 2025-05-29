@@ -2,7 +2,7 @@
 
 **All-in-one Solana-first DeFi cockpit with AI analytics, cross-chain routing and gas-optimised trades.**
 
-![Voxen Forge Homepage](public/images/homepage.png)
+[![Voxen Forge Demo](public/images/voxen-forge-demo.png)](https://youtu.be/AorTZiHTodA)
 
 ## Why Voxen Forge?
 
@@ -65,3 +65,11 @@ types/        Shared TypeScript definitions
 ## Contributing 🤝
 
 PRs are welcome! Please open an issue first if you plan a large change so we can align on direction.
+
+## Final Output
+
+| Item                | Location                                  |
+| ------------------- | ----------------------------------------- |
+| Live Demo           | https://voxen-forge.vercel.app            |
+| Demo Video          | https://voxen-forge.vercel.app/demo-video |
+| Demo Video (Mirror) | https://youtu.be/AorTZiHTodA              |
