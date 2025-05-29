@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useRef } from "react";
+import { useCallback, useRef } from "react";
 
 import {
   ArrowDown,
@@ -111,18 +111,6 @@ export default function SolanaSwapPage() {
     [setToToken],
   );
 
-  useEffect(() => {
-    if (
-      fromToken &&
-      toToken &&
-      parseFloat(fromAmount) > 0 &&
-      !quoting &&
-      !executing
-    ) {
-      void getQuote();
-    }
-  }, [fromToken, toToken, fromAmount]); // include amount for auto-refresh
-
   const headerActions = (
     <IconBtn
       icon={RefreshCw}
@@ -195,7 +183,9 @@ export default function SolanaSwapPage() {
       <AmountSection
         label="From"
         amount={fromAmount}
-        onAmountChange={setFromAmount}
+        onAmountChange={(v) => {
+          setFromAmount(v);
+        }}
         token={fromToken}
         onTokenChange={handleSelectFromToken}
       />

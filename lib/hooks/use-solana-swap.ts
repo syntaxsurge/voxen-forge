@@ -520,18 +520,7 @@ export function useSolanaSwap(): UseSolanaSwap {
     }
   };
 
-  /* ----------------------------- Auto-quote ------------------------------ */
-  useEffect(() => {
-    if (
-      fromToken &&
-      toToken &&
-      parseFloat(fromAmount) > 0 &&
-      !quoting &&
-      !executing
-    ) {
-      void getQuote();
-    }
-  }, [fromToken, toToken, fromAmount]); // include amount
+  /* ----------------------------- Returned API ---------------------------- */
 
   return {
     tokens,
