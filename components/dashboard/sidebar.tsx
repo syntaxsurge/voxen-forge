@@ -28,16 +28,16 @@ export function DashboardSidebar({ open, setOpen }: DashboardSidebarProps) {
     { label: "Home", icon: Home, href: "/dashboard" },
     { label: "AI Chat", icon: MessageSquare, href: "/dashboard/ai-chat" },
     { label: "Wallet", icon: Wallet, href: "/dashboard/wallet" },
+    {
+      label: "Sentiment Radar",
+      icon: BarChart3,
+      href: "/dashboard/sentiment-radar",
+    },
     { label: "Swap", icon: ArrowLeftRight, href: "/dashboard/swap" },
     {
       label: "Cross-Chain Swap",
       icon: ArrowLeftRight,
       href: "/dashboard/cross-chain",
-    },
-    {
-      label: "Sentiment Radar",
-      icon: BarChart3,
-      href: "/dashboard/sentiment-radar",
     },
   ];
 
