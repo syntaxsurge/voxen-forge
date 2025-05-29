@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useRef } from "react";
+
 import {
   ArrowDown,
   Info,
@@ -129,6 +130,39 @@ const IconBtn = ({
   </Button>
 );
 
+const ActionBtn = ({
+  label,
+  icon: Icon,
+  onClick,
+  loading,
+  gradient,
+}: {
+  label: string;
+  icon: any;
+  onClick: () => void;
+  loading: boolean;
+  gradient: string;
+}) => (
+  <Button
+    className={`py-6 text-sm gap-2 bg-gradient-to-r ${gradient} text-white`}
+    size="lg"
+    onClick={onClick}
+    disabled={loading}
+  >
+    {loading ? (
+      <>
+        <Loader2 className="h-4 w-4 animate-spin" />
+        {label}…
+      </>
+    ) : (
+      <>
+        <Icon className="h-4 w-4" />
+        {label}
+      </>
+    )}
+  </Button>
+);
+
 /* -------------------------------------------------------------------------- */
 /*                             Main swap component                            */
 /* -------------------------------------------------------------------------- */
@@ -180,90 +214,6 @@ export default function SolanaSwapPage() {
     />
   );
 
-  const SwapPanel = () => (
-    <div className="backdrop-blur-sm bg-gradient-to-br from-purple-100/10 to-blue-100/10 border border-white/10 rounded-xl overflow-visible hover:border-white/20 transition-all">
-      <AmountSection
-        label="From"
-        amount={fromAmount}
-        onAmountChange={setFromAmount}
-        token={fromToken}
-        onTokenChange={handleSelectFromToken}
-        tokens={tokens}
-        tokensLoading={tokensLoading}
-      />
-      <div className="flex justify-center -mt-2 -mb-2 relative z-10">
-        <Button
-          onClick={swapTokens}
-          size="icon"
-          className="rounded-full h-10 w-10 bg-gradient-to-r from-purple-500/20 to-blue-500/20"
-        >
-          <ArrowDown className="h-5 w-5 text-white" />
-        </Button>
-      </div>
-      <AmountSection
-        label="To"
-        amount={toAmount}
-        readOnly
-        token={toToken}
-        onTokenChange={handleSelectToToken}
-        tokens={tokens}
-        tokensLoading={tokensLoading}
-      />
-    </div>
-  );
-
-  const ActionBtn = ({
-    label,
-    icon: Icon,
-    onClick,
-    loading,
-    gradient,
-  }: {
-    label: string;
-    icon: any;
-    onClick: () => void;
-    loading: boolean;
-    gradient: string;
-  }) => (
-    <Button
-      className={`py-6 text-sm gap-2 bg-gradient-to-r ${gradient} text-white`}
-      size="lg"
-      onClick={onClick}
-      disabled={loading}
-    >
-      {loading ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          {label}…
-        </>
-      ) : (
-        <>
-          <Icon className="h-4 w-4" />
-          {label}
-        </>
-      )}
-    </Button>
-  );
-
-  const Actions = () => (
-    <div className="grid grid-cols-2 gap-3 mt-6">
-      <ActionBtn
-        label="Quote"
-        icon={Info}
-        onClick={getQuote}
-        loading={quoting}
-        gradient="from-purple-500/20 to-blue-500/20 border-purple-500/30"
-      />
-      <ActionBtn
-        label="Execute"
-        icon={Zap}
-        onClick={executeSwap}
-        loading={executing}
-        gradient="from-green-500/20 to-emerald-500/20 border-green-500/30"
-      />
-    </div>
-  );
-
   /* -------------------------------- Metrics ------------------------------- */
 
   const payHuman =
@@ -297,7 +247,38 @@ export default function SolanaSwapPage() {
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <SwapPanel />
+            {/* Swap panel */}
+            <div className="backdrop-blur-sm bg-gradient-to-br from-purple-100/10 to-blue-100/10 border border-white/10 rounded-xl overflow-visible hover:border-white/20 transition-all">
+              <AmountSection
+                label="From"
+                amount={fromAmount}
+                onAmountChange={setFromAmount}
+                token={fromToken}
+                onTokenChange={handleSelectFromToken}
+                tokens={tokens}
+                tokensLoading={tokensLoading}
+              />
+              <div className="flex justify-center -mt-2 -mb-2 relative z-10">
+                <Button
+                  onClick={swapTokens}
+                  size="icon"
+                  className="rounded-full h-10 w-10 bg-gradient-to-r from-purple-500/20 to-blue-500/20"
+                >
+                  <ArrowDown className="h-5 w-5 text-white" />
+                </Button>
+              </div>
+              <AmountSection
+                label="To"
+                amount={toAmount}
+                readOnly
+                token={toToken}
+                onTokenChange={handleSelectToToken}
+                tokens={tokens}
+                tokensLoading={tokensLoading}
+              />
+            </div>
+
+            {/* Slippage */}
             <Card className="mt-6 bg-gradient-to-br from-purple-100/10 to-blue-100/10 border-white/10 hover:border-white/20 transition-all">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
@@ -312,7 +293,26 @@ export default function SolanaSwapPage() {
                 </div>
               </CardContent>
             </Card>
-            <Actions />
+
+            {/* Actions */}
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <ActionBtn
+                label="Quote"
+                icon={Info}
+                onClick={getQuote}
+                loading={quoting}
+                gradient="from-purple-500/20 to-blue-500/20 border-purple-500/30"
+              />
+              <ActionBtn
+                label="Execute"
+                icon={Zap}
+                onClick={executeSwap}
+                loading={executing}
+                gradient="from-green-500/20 to-emerald-500/20 border-green-500/30"
+              />
+            </div>
+
+            {/* Error */}
             {error && (
               <Card className="mt-4 bg-red-900/20 border-red-500/30">
                 <CardContent className="p-4">
@@ -320,6 +320,8 @@ export default function SolanaSwapPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Quote info */}
             {quote && !error && fromToken && toToken && (
               <InfoCard
                 icon={Info}
@@ -342,6 +344,8 @@ export default function SolanaSwapPage() {
                 gradientTo="#3b82f6"
               />
             )}
+
+            {/* Execution info */}
             {execute && !error && (
               <InfoCard
                 icon={Zap}
@@ -385,12 +389,16 @@ export default function SolanaSwapPage() {
                 }
               />
             )}
+
+            {/* Token load error */}
             {tokensError && (
               <p className="mt-4 text-center text-xs text-red-400">
                 {tokensError}
               </p>
             )}
           </div>
+
+          {/* Sidebar */}
           <Sidebar />
         </div>
       </div>
