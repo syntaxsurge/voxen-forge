@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { marked } from "marked";
 import { twMerge } from "tailwind-merge";
 
+import { NATIVE_SOL_ADDRESS } from "./constants";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -66,12 +68,6 @@ export function shortAddress(addr: string, head = 6, tail = 4): string {
 export function markdownToHtml(markdown: string): string | Promise<string> {
   return marked.parse(markdown);
 }
-
-/* -------------------------------------------------------------------------- */
-/*                         New symbol / amount helpers                        */
-/* -------------------------------------------------------------------------- */
-
-export const NATIVE_SOL_ADDRESS = "11111111111111111111111111111111";
 
 /**
  * Returns a human-friendly symbol name, converting wrapped SOL to "WSOL".

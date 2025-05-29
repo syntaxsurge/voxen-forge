@@ -1,5 +1,6 @@
-import { chainList } from "@/lib/constants/cross-chain";
 import { compact } from "@/lib/utils";
+
+import { chainList } from "../constants";
 
 export const TOKEN_ADDRESS_MAP: Record<string, string> = {
   ETH: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",

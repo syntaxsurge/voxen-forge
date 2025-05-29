@@ -10,9 +10,10 @@ import {
   extractPrice,
   formatTokenBalanceTable,
 } from "@/lib/ai/chat-utils";
-import { chainList } from "@/lib/constants/cross-chain";
 import { useWallet } from "@/lib/contexts/wallet-context";
 import { openaiAgent, chatWithContext } from "@/lib/openai";
+
+import { chainList } from "../constants";
 
 /* -------------------------------------------------------------------------- */
 

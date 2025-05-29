@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from "react";
 
-import { chainList, routeOptions } from "@/lib/constants/cross-chain";
 import { useWallet } from "@/lib/contexts/wallet-context";
 import { fetchCachedJson } from "@/lib/network/fetch-cache";
 import { sleep, toRawAmount, fromRawAmount } from "@/lib/utils";
@@ -12,6 +11,8 @@ import type {
   Bridge,
   CrossChainSwapResult,
 } from "@/types/api/cross-chain";
+
+import { chainList, routeOptions } from "../constants";
 
 /* -------------------------------------------------------------------------- */
 /*                         Module-level persistent cache                      */

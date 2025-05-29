@@ -11,18 +11,10 @@ import { fetchCachedJson } from "@/lib/network/fetch-cache";
 import { toRawAmount, fromRawAmount } from "@/lib/utils";
 import type { SwapToken } from "@/types/swap";
 
-/* -------------------------------------------------------------------------- */
-/*                              Local constants                               */
-/* -------------------------------------------------------------------------- */
+import { NATIVE_SOL_ADDRESS } from "../constants";
 
 const DEFAULT_SLIPPAGE = "0.1";
 const TOKEN_ENDPOINT = `/api/token-catalog?chainIndex=${CHAIN_INDEX_MAP["SOL"]}`;
-const NATIVE_SOL_ADDRESS = "11111111111111111111111111111111";
-
-/* -------------------------------------------------------------------------- */
-/*                        Module-level persistent store                       */
-/* -------------------------------------------------------------------------- */
-
 interface GlobalState {
   tokens: SwapToken[];
   tokensLoaded: boolean;
@@ -60,11 +52,6 @@ function normalizeAddress(symbol: string, address: string | undefined | null) {
   if (!address || address === "") return "";
   return address.trim();
 }
-
-/* -------------------------------------------------------------------------- */
-/*                                Hook types                                  */
-/* -------------------------------------------------------------------------- */
-
 export interface UseSolanaSwap {
   tokens: SwapToken[];
   tokensLoading: boolean;
@@ -95,10 +82,6 @@ export interface UseSolanaSwap {
   error: string | null;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Hook                                      */
-/* -------------------------------------------------------------------------- */
-
 export function useSolanaSwap(): UseSolanaSwap {
   const {
     connected,
@@ -128,10 +111,6 @@ export function useSolanaSwap(): UseSolanaSwap {
   const [error, setError] = useState<string | null>(null);
 
   const inFlight = useRef<Promise<void> | null>(null);
-
-  /* ---------------------------------------------------------------------- */
-  /*                              Token loader                              */
-  /* ---------------------------------------------------------------------- */
 
   const loadTokens = useCallback(
     async (force = false) => {
@@ -325,18 +304,10 @@ export function useSolanaSwap(): UseSolanaSwap {
     G.execute = execute;
   }, [execute]);
 
-  /* ---------------------------------------------------------------------- */
-  /*                     Clear stale quote on token change                  */
-  /* ---------------------------------------------------------------------- */
-
   useEffect(() => {
     setQuote(null);
     setToAmount("");
   }, [fromToken, toToken]);
-
-  /* ---------------------------------------------------------------------- */
-  /*                               Helpers                                  */
-  /* ---------------------------------------------------------------------- */
 
   const hasValidInputs = () =>
     !!fromToken &&
@@ -379,10 +350,6 @@ export function useSolanaSwap(): UseSolanaSwap {
     return null;
   }
 
-  /* ---------------------------------------------------------------------- */
-  /*                                QUOTE                                   */
-  /* ---------------------------------------------------------------------- */
-
   const getQuote = async () => {
     if (!requireInputs(false)) return;
 
@@ -424,10 +391,6 @@ export function useSolanaSwap(): UseSolanaSwap {
       setQuoting(false);
     }
   };
-
-  /* ---------------------------------------------------------------------- */
-  /*                                EXECUTE                                 */
-  /* ---------------------------------------------------------------------- */
 
   const extractTransactionString = (raw: any): string | null => {
     if (!raw) return null;

@@ -1,6 +1,6 @@
 "use client";
 
-import { chainList } from "@/lib/constants/cross-chain";
+import { chainList } from "@/lib/constants";
 import type { Token } from "@/types/api/cross-chain";
 
 import ChainSelector from "./chain-selector";

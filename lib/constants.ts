@@ -1,3 +1,5 @@
+export const NATIVE_SOL_ADDRESS = "11111111111111111111111111111111";
+
 export const chainList = [
   {
     name: "Ethereum",

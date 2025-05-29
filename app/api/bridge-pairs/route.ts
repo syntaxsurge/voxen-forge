@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 
-import { chainList } from "@/lib/constants/cross-chain";
+import { chainList } from "@/lib/constants";
 import {
   ok,
   badRequest,

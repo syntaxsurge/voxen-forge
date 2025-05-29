@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { chainList } from "@/lib/constants/cross-chain";
+import { chainList } from "@/lib/constants";
 
 type Chain = (typeof chainList)[number];
 
