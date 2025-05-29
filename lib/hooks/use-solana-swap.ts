@@ -136,7 +136,6 @@ export function useSolanaSwap(): UseSolanaSwap {
   const loadTokens = useCallback(
     async (force = false) => {
       if (G.tokensLoaded && !force) {
-        // already in memory - just sync to local state
         setTokens(G.tokens);
         setTokensError(G.tokensError);
         return;
@@ -168,7 +167,7 @@ export function useSolanaSwap(): UseSolanaSwap {
             tokenMap.set(addr.toLowerCase(), { ...t, address: addr });
           });
 
-          /* --------------------------- wallet bal -------------------------- */
+          /* Wallet balances merge */
           if (connected && publicKey) {
             try {
               const res = await fetch("/api/portfolio/token-balances", {
@@ -251,7 +250,7 @@ export function useSolanaSwap(): UseSolanaSwap {
             },
           );
 
-          /* --------------------------- defaults --------------------------- */
+          /* Defaults */
           if (!G.tokensLoaded || force) {
             const sol =
               merged.find((t) => Number(t.balance ?? 0) > 0) ??
@@ -264,12 +263,12 @@ export function useSolanaSwap(): UseSolanaSwap {
             G.toToken = next ?? merged[1] ?? merged[0];
           }
 
-          /* ---------------------- write global cache ---------------------- */
+          /* Write cache */
           G.tokens = merged;
           G.tokensLoaded = true;
           G.tokensError = null;
 
-          /* ------------------------- sync local --------------------------- */
+          /* Sync local */
           setTokens(merged);
           setFromToken(G.fromToken);
           setToToken(G.toToken);
@@ -366,7 +365,7 @@ export function useSolanaSwap(): UseSolanaSwap {
   function extractQuotePayload(raw: any): any | null {
     if (!raw?.data) return null;
     if (Array.isArray(raw.data)) return raw.data[0] ?? null;
-    if (raw.data?.data?.data?.length) return raw.data.data.data[0]; // nested
+    if (raw.data?.data?.data?.length) return raw.data.data.data[0];
     if (raw.data?.data?.length) return raw.data.data[0];
     return null;
   }
@@ -464,13 +463,17 @@ export function useSolanaSwap(): UseSolanaSwap {
     setExecute(null);
 
     try {
+      /* Prefer amount provided in the quote to avoid parameter mismatch */
+      const rawAmount =
+        quote?.fromTokenAmount ?? toRawAmount(fromAmount, fromToken!.decimals);
+
       const body = {
         action: "execute",
         chainIndex: CHAIN_INDEX_MAP["SOL"],
         chainId: CHAIN_INDEX_MAP["SOL"],
         fromTokenAddress: fromToken!.address,
         toTokenAddress: toToken!.address,
-        amount: toRawAmount(fromAmount, fromToken!.decimals),
+        amount: rawAmount,
         slippage,
         userWalletAddress: publicKey!,
       };
@@ -487,7 +490,7 @@ export function useSolanaSwap(): UseSolanaSwap {
       const txStr = extractTransactionString(json.data);
       if (!txStr) throw new Error("No transaction payload returned");
 
-      /* ------------------------ Decode + sign --------------------------- */
+      /* Decode + sign */
       const decoded = bs58.decode(txStr.trim());
       const { blockhash } = await connection.getLatestBlockhash();
       let tx: Transaction | VersionedTransaction;
@@ -509,6 +512,7 @@ export function useSolanaSwap(): UseSolanaSwap {
         explorerUrl: `https://solscan.io/tx/${signature}`,
       };
       setExecute(execObj);
+      setError(null);
       void loadTokens(true);
     } catch (e: any) {
       setError(e.message || "Execution error");

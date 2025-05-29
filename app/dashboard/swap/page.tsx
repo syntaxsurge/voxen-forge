@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 
 import {
   ArrowDown,
@@ -145,40 +145,52 @@ export default function SolanaSwapPage() {
     readOnly?: boolean;
     token: SwapToken | null;
     onTokenChange: (t: SwapToken) => void;
-  }) => (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-sm text-white/60">{label}</span>
-        <div className="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full border border-purple-500/30 text-xs text-purple-300 font-medium">
-          Solana
+  }) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    return (
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm text-white/60">{label}</span>
+          <div className="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full border border-purple-500/30 text-xs text-purple-300 font-medium">
+            Solana
+          </div>
         </div>
-      </div>
-      <div className="flex justify-between items-center mb-2">
-        <input
-          type="text"
-          value={amount}
-          readOnly={readOnly}
-          onChange={(e) => onAmountChange?.(e.target.value)}
-          className="text-2xl font-medium bg-transparent outline-none w-[60%] text-white placeholder:text-white/40"
-          placeholder="0.0"
+        <div className="flex justify-between items-center mb-2">
+          <input
+            ref={inputRef}
+            autoFocus={!readOnly}
+            type="text"
+            value={amount}
+            readOnly={readOnly}
+            onChange={(e) => {
+              if (onAmountChange) {
+                onAmountChange(e.target.value);
+                /* Re-focus after re-render to prevent blur */
+                requestAnimationFrame(() => inputRef.current?.focus());
+              }
+            }}
+            className="text-2xl font-medium bg-transparent outline-none w-[60%] text-white placeholder:text-white/40"
+            placeholder="0.0"
+          />
+          <TokenSelector
+            tokens={tokens}
+            selected={token}
+            onSelect={onTokenChange}
+            loading={tokensLoading}
+          />
+        </div>
+        <BalanceLine
+          tok={token}
+          onMax={
+            readOnly || !onAmountChange
+              ? undefined
+              : () => onAmountChange(token?.balance ?? "0")
+          }
         />
-        <TokenSelector
-          tokens={tokens}
-          selected={token}
-          onSelect={onTokenChange}
-          loading={tokensLoading}
-        />
       </div>
-      <BalanceLine
-        tok={token}
-        onMax={
-          readOnly || !onAmountChange
-            ? undefined
-            : () => onAmountChange(token?.balance ?? "0")
-        }
-      />
-    </div>
-  );
+    );
+  };
 
   const SwapPanel = () => (
     <div className="backdrop-blur-sm bg-gradient-to-br from-purple-100/10 to-blue-100/10 border border-white/10 rounded-xl overflow-visible hover:border-white/20 transition-all">
